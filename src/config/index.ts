@@ -9,6 +9,8 @@ const env = createEnv({
     DATABASE_PASSWORD: z.string().min(1),
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
+    AUTH_SECRET: z.string().min(1),
+    AUTH_TRUST_HOST: z.boolean().nullable(),
   },
   clientPrefix: "PUBLIC_",
   client: {},

@@ -1,10 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import { SignIn, SignOut } from "auth-astro/components";
+import { getSession } from "auth-astro/server";
+
+const session = await getSession(Astro.request);
 ---
 
 <Layout title="Welcome to Astro.">
   <main>
+    {
+      session ? (
+        <>
+          <p>Welcome {session.user?.name}</p>
+          <SignOut>Logout</SignOut>
+        </>
+      ) : (
+        <>
+          <p>Not logged in</p>
+          <SignIn provider="github">Login</SignIn>
+        </>
+      )
+    }
     <svg
       class="astro-a"
       width="495"
