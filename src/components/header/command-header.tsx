@@ -71,14 +71,22 @@ export const CommandHeader = ({ session }: { session: Session | null }) => {
             </CommandItem>
             {session ? (
               <CommandItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                <AuthOut>Log out</AuthOut>
+                <AuthOut variant="ghost" className="p-0 h-auto">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log out
+                </AuthOut>
                 <CommandShortcut>⇧⌘Q</CommandShortcut>
               </CommandItem>
             ) : (
               <CommandItem>
-                <LogIn className="mr-2 h-4 w-4" />
-                <AuthIn provider="github">Log out</AuthIn>
+                <AuthIn
+                  provider="github"
+                  variant="ghost"
+                  className="p-0 h-auto"
+                >
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Log in
+                </AuthIn>
                 <CommandShortcut>⇧⌘S</CommandShortcut>
               </CommandItem>
             )}
