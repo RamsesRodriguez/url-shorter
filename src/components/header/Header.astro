@@ -1,0 +1,54 @@
+---
+import { SignIn, SignOut } from "auth-astro/components";
+import { getSession } from "auth-astro/server";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components//ui/button";
+
+import { DropdownHeader } from "./dropdown-header";
+import { CommandHeader } from "./command-header";
+
+const session = await getSession(Astro.request);
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <div class="container flex h-14 max-w-screen-2xl items-center">
+    <a
+      href="/"
+      class="flex items-center cursor-pointer text-white hover:text-gray-300 transition-all"
+    >
+      <h1 class="text-xl">URL Shorter</h1>
+    </a>
+    <div
+      class="flex flex-1 items-center justify-between space-x-2 md:justify-end"
+    >
+      <nav class="w-full flex-1 md:w-auto md:flex-none">
+        <!-- @ts-expect-error -->
+        <CommandHeader session={session} client:load>
+          <span slot="signIn">
+            <SignIn provider="github">Log in with GitHub</SignIn>
+          </span>
+          <span slot="signOut">
+            <SignOut>Log out</SignOut>
+          </span>
+        </CommandHeader>
+        {
+          session ? (
+            // @ts-expect-error
+            <DropdownHeader session={session} client:load>
+              <span slot="signOut">
+                <SignOut>Log out</SignOut>
+              </span>
+            </DropdownHeader>
+          ) : (
+            <Button variant="outline" asChild>
+              <SignIn provider="github">Login with GitHub</SignIn>
+            </Button>
+          )
+        }
+        <ModeToggle client:load />
+      </nav>
+    </div>
+  </div>
+</header>
