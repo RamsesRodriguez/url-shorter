@@ -1,4 +1,4 @@
-import { drizzle } from "drizzle-orm/planetscale-serverless";
+import { drizzle } from "drizzle-orm/mysql2";
 import { connect } from "@planetscale/database";
 
 // create the connection
@@ -8,4 +8,4 @@ export const connection = connect({
   password: process.env["DATABASE_PASSWORD"],
 });
 
-export const db = drizzle(connection);
+export const db = drizzle(connection, { mode: "default" });

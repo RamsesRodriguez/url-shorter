@@ -13,16 +13,9 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { AuthIn, AuthOut } from "../auth";
 
-export const CommandHeader = ({
-  session,
-  signIn,
-  signOut,
-}: {
-  session: Session | null;
-  signIn: JSX.Element;
-  signOut: JSX.Element;
-}) => {
+export const CommandHeader = ({ session }: { session: Session | null }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -79,13 +72,13 @@ export const CommandHeader = ({
             {session ? (
               <CommandItem>
                 <LogOut className="mr-2 h-4 w-4" />
-                {signOut}
+                <AuthOut>Log out</AuthOut>
                 <CommandShortcut>⇧⌘Q</CommandShortcut>
               </CommandItem>
             ) : (
               <CommandItem>
                 <LogIn className="mr-2 h-4 w-4" />
-                {signIn}
+                <AuthIn provider="github">Log out</AuthIn>
                 <CommandShortcut>⇧⌘S</CommandShortcut>
               </CommandItem>
             )}
