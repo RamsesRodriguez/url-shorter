@@ -13,6 +13,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { NewLink } from "../new-link";
 
 export const CommandHeader = ({ session }: { session: Session | null }) => {
   const [open, setOpen] = useState(false);
@@ -60,12 +61,12 @@ export const CommandHeader = ({ session }: { session: Session | null }) => {
           <CommandGroup heading="Settings">
             <CommandItem>
               <Plus className="mr-2 h-4 w-4" />
-              <span>New Link</span>
+              <NewLink variant="ghost" className="p-0 h-auto" />
               <CommandShortcut>⇧⌘+L</CommandShortcut>
             </CommandItem>
             <CommandItem>
               <LayoutDashboard className="mr-2 h-4 w-4" />
-              <span>Dashboard</span>
+              <a href="/dashboard">Dashboard</a>
               <CommandShortcut>⇧⌘D</CommandShortcut>
             </CommandItem>
             {session ? (

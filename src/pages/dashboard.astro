@@ -1,10 +1,13 @@
 ---
+import { eq } from "drizzle-orm";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/data-table";
-
 import { data } from "@/components/data-table/data";
+import { db } from "@/db";
+import { links } from "@/db/schema";
 
 import Layout from "../layouts/layout.astro";
 
@@ -12,6 +15,11 @@ const authRequest = Astro.locals.auth;
 const session = await authRequest.validate();
 
 if (!session) return Astro.redirect("/");
+
+const result = await db
+  .select()
+  .from(links)
+  .where(eq(links.creatorId, session?.user.id!));
 ---
 
 <Layout title="Welcome to Astro.">
@@ -33,7 +41,7 @@ if (!session) return Astro.redirect("/");
       <Button className="w-full" type="submit">Shorten URL</Button>
     </form>
     <div class="container mx-auto py-4">
-      <DataTable data={data} client:load />
+      <DataTable data={result} client:load />
     </div>
   </div>
 </Layout>

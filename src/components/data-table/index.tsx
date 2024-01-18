@@ -32,45 +32,38 @@ import {
 } from "@/components/ui/table";
 
 import { DataTableColumnHeader } from "./column-header";
+import type { links } from "@/db/schema";
+import { config } from "@/config";
+
+type LinkSelect = typeof links.$inferSelect;
 
 interface DataTableProps {
-  data: any[];
+  data: LinkSelect[];
 }
 
-type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<LinkSelect>[] = [
   {
-    accessorKey: "status",
+    accessorKey: "slug",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Slug" />
     ),
   },
   {
-    accessorKey: "email",
+    accessorKey: "originalLink",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader column={column} title="Original Link" />
+    ),
+    cell: ({ row }) => (
+      <div className="text-right font-medium w-[30ch] whitespace-nowrap overflow-hidden overflow-ellipsis">
+        {row.getValue("originalLink")}
+      </div>
     ),
   },
   {
-    accessorKey: "amount",
+    accessorKey: "description",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Amount" />
+      <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
   },
   {
     id: "actions",
@@ -78,7 +71,7 @@ const columns: ColumnDef<Payment>[] = [
       <DataTableColumnHeader column={column} title="Actions" />
     ),
     cell: ({ row }) => {
-      const payment = row.original;
+      const link = row.original;
 
       return (
         <DropdownMenu>
@@ -91,13 +84,14 @@ const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  `${config.env.PUBLIC_SITE_URL}/r/${link.slug}`
+                )
+              }
             >
-              Copy payment ID
+              Copy link
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

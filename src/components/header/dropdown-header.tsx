@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { NewLink } from "../new-link";
 
 export const DropdownHeader = ({ session }: { session: Session }) => (
   <DropdownMenu>
@@ -26,11 +27,11 @@ export const DropdownHeader = ({ session }: { session: Session }) => (
     <DropdownMenuContent className="w-56">
       <DropdownMenuItem>
         <Plus className="mr-2 h-4 w-4" />
-        <span>New Link</span>
+        <NewLink variant="ghost" className="p-0 h-auto" />
       </DropdownMenuItem>
       <DropdownMenuItem>
         <LayoutDashboard className="mr-2 h-4 w-4" />
-        <span>Dashboard</span>
+        <a href="/dashboard">Dashboard</a>
       </DropdownMenuItem>
       <DropdownMenuItem>
         <a href="/logout.json">
