@@ -1,11 +1,12 @@
 ---
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/data-table";
-import { data } from "@/components/data-table/data";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { db } from "@/db";
 import { links } from "@/db/schema";
 
@@ -16,10 +17,68 @@ const session = await authRequest.validate();
 
 if (!session) return Astro.redirect("/");
 
-const result = await db
+let result = await db
   .select()
   .from(links)
   .where(eq(links.creatorId, session?.user.id!));
+
+type NewLink = typeof links.$inferInsert;
+let newLink: NewLink | null = null;
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const url = data.get("url");
+    const description = data.get("description");
+    const randomSlug = nanoid(6);
+
+    const insertLink = async (user: NewLink) => {
+      return db.insert(links).values(user);
+    };
+
+    newLink = {
+      slug: randomSlug,
+      originalLink: url?.toString()!,
+      description: description?.toString() || null,
+      creatorId: session?.user?.id!,
+    };
+
+    console.log(newLink);
+
+    const [insertResult] = await db
+      .select({
+        slug: links.slug,
+      })
+      .from(links)
+      .where(
+        and(
+          eq(links.creatorId, session?.user.id!),
+          eq(links.originalLink, url?.toString()!)
+        )
+      );
+    if (insertResult) {
+      newLink = {
+        slug: insertResult.slug,
+        originalLink: url?.toString()!,
+        description: description?.toString() || null,
+        creatorId: session?.user?.id!,
+      };
+    } else {
+      await insertLink(newLink);
+
+      result = await db
+        .select()
+        .from(links)
+        .where(eq(links.creatorId, session?.user.id!));
+    }
+  } catch (error) {
+    newLink = null;
+
+    if (error instanceof Error) {
+      console.error(error);
+    }
+  }
+}
 ---
 
 <Layout title="Welcome to Astro.">
@@ -29,14 +88,14 @@ const result = await db
   <div
     class="grid md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6 max-w-6xl w-full mx-auto"
   >
-    <form class="space-y-4 text-foreground">
+    <form class="space-y-4 text-foreground" method="POST">
       <div class="space-y-2">
         <Label htmlFor="url">Long URL</Label>
-        <Input id="url" required type="url" />
+        <Input id="url" name="url" required type="url" />
       </div>
       <div class="space-y-2">
         <Label htmlFor="description">Description</Label>
-        <Input id="description" required type="text" />
+        <Textarea id="description" name="description" />
       </div>
       <Button className="w-full" type="submit">Shorten URL</Button>
     </form>

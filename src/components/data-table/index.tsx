@@ -124,10 +124,12 @@ export function DataTable({ data }: DataTableProps) {
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter URLs..."
+          value={
+            (table.getColumn("originalLink")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("originalLink")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
