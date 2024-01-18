@@ -24,6 +24,6 @@ const options = (() => {
 
 export const client = createClient(options);
 
-await client.sync();
+if (config.env.DATABASE_CONNECTION_TYPE !== "remote") await client.sync();
 
 export const db = drizzle(client);
