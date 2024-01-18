@@ -1,9 +1,8 @@
 ---
 import { nanoid } from "nanoid";
 
-import { AuthIn } from "@/components/auth";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { db } from "@/db";
 import { links } from "@/db/schema";
 import { cn } from "@/lib/utils";
@@ -60,15 +59,18 @@ if (Astro.request.method === "POST") {
               Welcome to our URL shortening service. Please login to proceed.
             </p>
             <div class="flex flex-1 w-auto justify-center items-center">
-              <AuthIn
-                provider="github"
-                className={cn(
-                  "relative h-8 justify-start rounded-[0.5rem] text-sm font-normal"
-                )}
-                client:only
-              >
-                Login with GitHub
-              </AuthIn>
+              <a href="/login/github.json">
+                <div
+                  class={cn(
+                    buttonVariants({
+                      variant: "default",
+                      class: "relative",
+                    })
+                  )}
+                >
+                  Login with Github
+                </div>
+              </a>
             </div>
           </>
         ) : (

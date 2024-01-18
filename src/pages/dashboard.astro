@@ -8,7 +8,10 @@ import { data } from "@/components/data-table/data";
 
 import Layout from "../layouts/layout.astro";
 
-const session = null;
+const authRequest = Astro.locals.auth;
+const session = await authRequest.validate();
+
+if (!session) return Astro.redirect("/");
 ---
 
 <Layout title="Welcome to Astro.">
