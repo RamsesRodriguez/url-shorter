@@ -1,13 +1,14 @@
-import { timestamp, mysqlTable, varchar } from "drizzle-orm/mysql-core";
-import { users } from ".";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { user } from ".";
 
-export const links = mysqlTable("links", {
-  slug: varchar("slug", { length: 32 }).primaryKey(),
-  creatorId: varchar("creatorId", { length: 255 })
+export const links = sqliteTable("links", {
+  slug: text("slug").primaryKey(),
+  creatorId: text("creatorId")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  originalLink: varchar("originalLink", { length: 255 }).notNull(),
-  description: varchar("description", { length: 255 }),
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow(),
-  updatedAt: timestamp("updatedAt", { mode: "date" }).onUpdateNow(),
+    .references(() => user.id, { onDelete: "cascade" }),
+  originalLink: text("originalLink", { length: 255 }).notNull(),
+  description: text("description", { length: 255 }),
+  updatedAt: integer("createdAt", { mode: "timestamp_ms" }).$defaultFn(
+    () => new Date()
+  ),
 });

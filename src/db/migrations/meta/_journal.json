@@ -1,19 +1,12 @@
 {
   "version": "5",
-  "dialect": "mysql",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1705331803902,
-      "tag": "0000_fearless_tyrannus",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1705334149681,
-      "tag": "0001_optimal_wild_pack",
+      "when": 1705574460800,
+      "tag": "0000_harsh_scarlet_witch",
       "breakpoints": true
     }
   ]

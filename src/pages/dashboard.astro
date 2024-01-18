@@ -1,0 +1,36 @@
+---
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { DataTable } from "@/components/data-table";
+
+import { data } from "@/components/data-table/data";
+
+import Layout from "../layouts/layout.astro";
+
+const session = null;
+---
+
+<Layout title="Welcome to Astro.">
+  <div class="max-w-6xl w-full mx-auto grid gap-2">
+    <h1 class="font-semibold text-3xl">URL Shortener</h1>
+  </div>
+  <div
+    class="grid md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr] items-start gap-6 max-w-6xl w-full mx-auto"
+  >
+    <form class="space-y-4 text-foreground">
+      <div class="space-y-2">
+        <Label htmlFor="url">Long URL</Label>
+        <Input id="url" required type="url" />
+      </div>
+      <div class="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Input id="description" required type="text" />
+      </div>
+      <Button className="w-full" type="submit">Shorten URL</Button>
+    </form>
+    <div class="container mx-auto py-4">
+      <DataTable data={data} client:load />
+    </div>
+  </div>
+</Layout>

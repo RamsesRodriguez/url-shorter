@@ -1,24 +1,23 @@
 import { LogOut, Plus, LayoutDashboard } from "lucide-react";
-import type { Session } from "@auth/core/types";
+import type { Session } from "lucia";
 
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AuthOut } from "../auth";
+import { cn } from "@/lib/utils";
 
 export const DropdownHeader = ({ session }: { session: Session }) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button variant="outline" className="rounded-full p-0 m-0 h-8">
-        {session.user?.image && (
+        {session.user?.avatar && (
           <Avatar className="h-8 w-8">
-            <AvatarImage src={session.user.image} alt="User's avatar" />
+            <AvatarImage src={session.user.avatar} alt="User's avatar" />
             <AvatarFallback>PC</AvatarFallback>
           </Avatar>
         )}
@@ -34,10 +33,19 @@ export const DropdownHeader = ({ session }: { session: Session }) => (
         <span>Dashboard</span>
       </DropdownMenuItem>
       <DropdownMenuItem>
-        <AuthOut variant="ghost" className="p-0 h-auto">
-          <LogOut className="mr-2 h-4 w-4" />
-          Log out
-        </AuthOut>
+        <a href="/logout.json">
+          <div
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                class: "p-0 h-auto",
+              })
+            )}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Log out
+          </div>
+        </a>
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

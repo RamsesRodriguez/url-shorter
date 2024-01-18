@@ -1,11 +1,29 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import { connect } from "@planetscale/database";
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
+import { config } from "@/config";
 
-// create the connection
-export const connection = connect({
-  host: process.env["DATABASE_HOST"],
-  username: process.env["DATABASE_USERNAME"],
-  password: process.env["DATABASE_PASSWORD"],
-});
+const options = (() => {
+  switch (config.env.DATABASE_CONNECTION_TYPE) {
+    case "local":
+      return {
+        url: "file:local.sqlite",
+      };
+    case "remote":
+      return {
+        url: config.env.DATABASE_URL,
+        authToken: config.env.DATABASE_TOKEN!,
+      };
+    case "local-replica":
+      return {
+        url: "file:local.sqlite",
+        syncUrl: config.env.DATABASE_URL,
+        authToken: config.env.DATABASE_TOKEN!,
+      };
+  }
+})();
 
-export const db = drizzle(connection, { mode: "default" });
+export const client = createClient(options);
+
+await client.sync();
+
+export const db = drizzle(client);

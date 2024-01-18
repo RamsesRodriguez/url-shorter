@@ -1,0 +1,79 @@
+---
+import { ModeToggle } from "@/components/mode-toggle";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { auth } from "@/lib/lucia";
+
+import { CommandHeader } from "./command-header";
+import { DropdownHeader } from "./dropdown-header";
+import LinkIcon from "../icons/link-icon.astro";
+import GithubIcon from "../icons/github-icon.astro";
+
+const authRequest = Astro.locals.auth;
+const session = await authRequest.validate();
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <div class="container flex h-14 max-w-screen-2xl items-center">
+    <div class="flex flex-1 justify-start items-center">
+      <a
+        href="/"
+        class="flex items-center gap-2 text-lg font-semibold sm:text-base mr-4 text-accent-foreground"
+      >
+        <LinkIcon class="w-6 h-6" />
+        URL Shorter
+      </a>
+      <nav class="flex items-center gap-2">
+        <a class="text-gray-500 dark:text-gray-400" href="/about"> About</a>
+        <a class="font-bold" href="/dashboard"> Dashboard</a>
+      </nav>
+    </div>
+    <div class="w-full flex flex-1 justify-center items-center">
+      <CommandHeader session={session} client:load />
+    </div>
+    <div
+      class="flex flex-1 items-center justify-between space-x-2 md:justify-end"
+    >
+      <div class="flex items-center gap-2">
+        {
+          session ? (
+            <DropdownHeader session={session} client:load />
+          ) : (
+            <a href="/login/github.json">
+              <div
+                class={cn(
+                  buttonVariants({
+                    variant: "default",
+                  })
+                )}
+              >
+                Login with Github
+              </div>
+            </a>
+          )
+        }
+        <a
+          href="https://github.com/RamsesRodriguez/url-shorter"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <div
+            class={cn(
+              buttonVariants({
+                variant: "ghost",
+                size: "icon",
+              }),
+              "text-foreground rounded-full"
+            )}
+          >
+            <GithubIcon class="h-4 w-4" />
+            <span class="sr-only">GitHub</span>
+          </div>
+        </a>
+        <ModeToggle client:load />
+      </div>
+    </div>
+  </div>
+</header>

@@ -4,13 +4,13 @@ import { z } from "zod";
 const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "production"]),
-    DATABASE_HOST: z.string().min(1),
-    DATABASE_USERNAME: z.string().min(1),
-    DATABASE_PASSWORD: z.string().min(1),
+    DATABASE_CONNECTION_TYPE: z.enum(["local", "remote", "local-replica"]),
+    DATABASE_URL: z.string().min(1),
+    DATABASE_TOKEN: z.string().min(1),
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
     AUTH_SECRET: z.string().min(1),
-    AUTH_TRUST_HOST: z.boolean().nullable(),
+    AUTH_TRUST_HOST: z.coerce.boolean().nullable(),
   },
   clientPrefix: "PUBLIC_",
   client: {},

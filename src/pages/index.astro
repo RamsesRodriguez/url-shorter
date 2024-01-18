@@ -1,9 +1,103 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import { nanoid } from "nanoid";
+
+import { AuthIn } from "@/components/auth";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { db } from "@/db";
+import { links } from "@/db/schema";
+import { cn } from "@/lib/utils";
+
+import Layout from "../layouts/layout.astro";
+
+const authRequest = Astro.locals.auth;
+const session = await authRequest.validate();
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const url = data.get("url");
+    const randomSlug = nanoid(6);
+
+    type NewLink = typeof links.$inferInsert;
+
+    const insertLink = async (user: NewLink) => {
+      return db.insert(links).values(user);
+    };
+
+    const newLink: NewLink = {
+      slug: randomSlug,
+      originalLink: url?.toString()!,
+      creatorId: session?.user?.id!,
+    };
+
+    console.log({
+      slug: randomSlug,
+      originalLink: url?.toString()!,
+      creatorId: session?.user?.id!,
+      user: session?.user,
+      session,
+    });
+    await insertLink(newLink);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error);
+    }
+  }
+}
 ---
 
 <Layout title="Welcome to Astro.">
-  <main class="flex-1">
-    <div class="container"></div>
-  </main>
+  <div class="max-w-6xl w-full mx-auto grid gap-2">
+    <h1 class="font-semibold text-3xl mx-auto pb-6">URL Shorter</h1>
+    <div
+      class="flex flex-1 flex-wrap flex-col justify-center items-center w-full"
+    >
+      {
+        !session ? (
+          <>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-[60ch]">
+              Welcome to our URL shortening service. Please login to proceed.
+            </p>
+            <div class="flex flex-1 w-auto justify-center items-center">
+              <AuthIn
+                provider="github"
+                className={cn(
+                  "relative h-8 justify-start rounded-[0.5rem] text-sm font-normal"
+                )}
+                client:only
+              >
+                Login with GitHub
+              </AuthIn>
+            </div>
+          </>
+        ) : (
+          <>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-[60ch]">
+              Welcome to our URL shortening service. You can procede to your
+              Dashboard to see all your shortened URLs. Or create a new link
+              with the form bellow.
+            </p>
+            <form
+              class="gap-4 flex flex-1 flex-col items-center justify-start"
+              method="POST"
+            >
+              <div class="space-y-2 w-56 pt-10">
+                <Input
+                  id="url"
+                  required
+                  type="url"
+                  name="url"
+                  placeholder="New link"
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Shorten URL
+              </Button>
+            </form>
+          </>
+        )
+      }
+    </div>
+  </div>
 </Layout>

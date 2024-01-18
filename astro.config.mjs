@@ -1,5 +1,4 @@
 import { defineConfig } from "astro/config";
-import auth from "auth-astro";
 
 import vercel from "@astrojs/vercel/serverless";
 import tailwind from "@astrojs/tailwind";
@@ -10,13 +9,10 @@ export default defineConfig({
   output: "server",
   adapter: vercel(),
   integrations: [
-    auth(),
     tailwind({
       applyBaseStyles: false,
     }),
-    react({
-      experimentalReactChildren: true,
-    }),
+    react(),
   ],
   vite: {
     ssr: {

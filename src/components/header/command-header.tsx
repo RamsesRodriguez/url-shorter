@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { LogOut, LogIn, Plus, LayoutDashboard } from "lucide-react";
-import type { Session } from "@auth/core/types";
+import type { Session } from "lucia";
 
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,10 +12,7 @@ import {
   CommandList,
   CommandShortcut,
 } from "@/components/ui/command";
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { AuthIn, AuthOut } from "../auth";
 
 export const CommandHeader = ({ session }: { session: Session | null }) => {
   const [open, setOpen] = useState(false);
@@ -71,22 +70,36 @@ export const CommandHeader = ({ session }: { session: Session | null }) => {
             </CommandItem>
             {session ? (
               <CommandItem>
-                <AuthOut variant="ghost" className="p-0 h-auto">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
-                </AuthOut>
+                <a href="/logout.json">
+                  <div
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        class: "p-0 h-auto",
+                      })
+                    )}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </div>
+                </a>
                 <CommandShortcut>⇧⌘Q</CommandShortcut>
               </CommandItem>
             ) : (
               <CommandItem>
-                <AuthIn
-                  provider="github"
-                  variant="ghost"
-                  className="p-0 h-auto"
-                >
-                  <LogIn className="mr-2 h-4 w-4" />
-                  Log in
-                </AuthIn>
+                <a href="/login/github.json">
+                  <div
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        class: "p-0 h-auto",
+                      })
+                    )}
+                  >
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Log in
+                  </div>
+                </a>
                 <CommandShortcut>⇧⌘S</CommandShortcut>
               </CommandItem>
             )}
