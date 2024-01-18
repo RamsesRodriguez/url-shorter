@@ -13,7 +13,9 @@ const env = createEnv({
     AUTH_TRUST_HOST: z.coerce.boolean().nullable(),
   },
   clientPrefix: "PUBLIC_",
-  client: {},
+  client: {
+    PUBLIC_SITE_URL: z.string().min(1),
+  },
   runtimeEnv: import.meta.env,
 });
 

@@ -1,16 +1,22 @@
 ---
 import { nanoid } from "nanoid";
+import { and, eq } from "drizzle-orm";
 
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { CopyButton } from "@/components/copy-button";
 import { db } from "@/db";
 import { links } from "@/db/schema";
 import { cn } from "@/lib/utils";
 
 import Layout from "../layouts/layout.astro";
+import { config } from "@/config";
 
 const authRequest = Astro.locals.auth;
 const session = await authRequest.validate();
+
+type NewLink = typeof links.$inferInsert;
+let newLink: NewLink | null = null;
 
 if (Astro.request.method === "POST") {
   try {
@@ -18,13 +24,11 @@ if (Astro.request.method === "POST") {
     const url = data.get("url");
     const randomSlug = nanoid(6);
 
-    type NewLink = typeof links.$inferInsert;
-
     const insertLink = async (user: NewLink) => {
       return db.insert(links).values(user);
     };
 
-    const newLink: NewLink = {
+    newLink = {
       slug: randomSlug,
       originalLink: url?.toString()!,
       creatorId: session?.user?.id!,
@@ -34,11 +38,31 @@ if (Astro.request.method === "POST") {
       slug: randomSlug,
       originalLink: url?.toString()!,
       creatorId: session?.user?.id!,
-      user: session?.user,
-      session,
     });
-    await insertLink(newLink);
+
+    const result = await db
+      .select({
+        slug: links.slug,
+      })
+      .from(links)
+      .where(
+        and(
+          eq(links.creatorId, session?.user.id!),
+          eq(links.originalLink, url?.toString()!)
+        )
+      );
+    if (result) {
+      newLink = {
+        slug: result[0].slug,
+        originalLink: url?.toString()!,
+        creatorId: session?.user?.id!,
+      };
+    } else {
+      await insertLink(newLink);
+    }
   } catch (error) {
+    newLink = null;
+
     if (error instanceof Error) {
       console.error(error);
     }
@@ -80,23 +104,33 @@ if (Astro.request.method === "POST") {
               Dashboard to see all your shortened URLs. Or create a new link
               with the form bellow.
             </p>
-            <form
-              class="gap-4 flex flex-1 flex-col items-center justify-start"
-              method="POST"
-            >
-              <div class="space-y-2 w-56 pt-10">
-                <Input
-                  id="url"
-                  required
-                  type="url"
-                  name="url"
-                  placeholder="New link"
+            {newLink ? (
+              <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
+                <CopyButton
+                  value={`${config.env.PUBLIC_SITE_URL}/r/${newLink.slug}`}
+                  client:load
                 />
-              </div>
-              <Button type="submit" className="w-full">
-                Shorten URL
-              </Button>
-            </form>
+                /r/{newLink.slug}
+              </code>
+            ) : (
+              <form
+                class="gap-4 flex flex-1 flex-col items-center justify-start"
+                method="POST"
+              >
+                <div class="space-y-2 w-56 pt-10">
+                  <Input
+                    id="url"
+                    required
+                    type="url"
+                    name="url"
+                    placeholder="New link"
+                  />
+                </div>
+                <Button type="submit" className="w-full">
+                  Shorten URL
+                </Button>
+              </form>
+            )}
           </>
         )
       }
